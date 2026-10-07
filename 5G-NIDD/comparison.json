@@ -1,0 +1,32 @@
+{
+  "accuracy": {
+    "1. Centralized VAE": 0.9977761175877825,
+    "2. Federated VAE (FL)": 0.9976197508556736,
+    "3. Centralized + DP (\u03b5=10)": 0.9976197508556736,
+    "4. PPF-VAE (FL+DP, Optimized)": 0.997793491669128
+  },
+  "precision": {
+    "1. Centralized VAE": 0.9974895397489539,
+    "2. Federated VAE (FL)": 0.9972710794175647,
+    "3. Centralized + DP (\u03b5=10)": 0.9972710794175647,
+    "4. PPF-VAE (FL+DP, Optimized)": 0.9974697667005359
+  },
+  "recall": {
+    "1. Centralized VAE": 0.9999600527303959,
+    "2. Federated VAE (FL)": 1.0,
+    "3. Centralized + DP (\u03b5=10)": 1.0,
+    "4. PPF-VAE (FL+DP, Optimized)": 1.0
+  },
+  "f1_score": {
+    "1. Centralized VAE": 0.998723268432812,
+    "2. Federated VAE (FL)": 0.9986336754131386,
+    "3. Centralized + DP (\u03b5=10)": 0.9986336754131386,
+    "4. PPF-VAE (FL+DP, Optimized)": 0.998733280802721
+  },
+  "auc_roc": {
+    "1. Centralized VAE": 0.9998463755249292,
+    "2. Federated VAE (FL)": 0.999996443087862,
+    "3. Centralized + DP (\u03b5=10)": 0.999956975761425,
+    "4. PPF-VAE (FL+DP, Optimized)": 0.9999341304666733
+  }
+}

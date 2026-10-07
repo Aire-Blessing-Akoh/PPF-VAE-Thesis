@@ -1,0 +1,138 @@
+{
+  "Experiment 3: Centralized + DP": [
+    {
+      "epsilon": 0.01,
+      "attack_type": "fgsm",
+      "attack_success_rate": 0.03184201778370297,
+      "avg_error_increase": 0.07059331238269806,
+      "clean_mean_error": 873.2661743164062,
+      "adv_mean_error": 873.3369140625,
+      "clean_accuracy": 0.9229164019764311,
+      "adv_accuracy": 0.9267966883118013,
+      "accuracy_drop": -0.0038802863353701866
+    },
+    {
+      "epsilon": 0.05,
+      "attack_type": "fgsm",
+      "attack_success_rate": 0.03299592217497924,
+      "avg_error_increase": 0.3494570851325989,
+      "clean_mean_error": 873.2664794921875,
+      "adv_mean_error": 873.6162719726562,
+      "clean_accuracy": 0.9224978288148897,
+      "adv_accuracy": 0.9376021414237753,
+      "accuracy_drop": -0.015104312608885562
+    },
+    {
+      "epsilon": 0.1,
+      "attack_type": "fgsm",
+      "attack_success_rate": 0.03869495675904283,
+      "avg_error_increase": 0.7034696340560913,
+      "clean_mean_error": 873.2666015625,
+      "adv_mean_error": 873.9697875976562,
+      "clean_accuracy": 0.9228798529685627,
+      "adv_accuracy": 0.9507545629695895,
+      "accuracy_drop": -0.027874710001026815
+    },
+    {
+      "epsilon": 0.2,
+      "attack_type": "fgsm",
+      "attack_success_rate": 0.05515593373142745,
+      "avg_error_increase": 1.4239169359207153,
+      "clean_mean_error": 873.2667846679688,
+      "adv_mean_error": 874.6906127929688,
+      "clean_accuracy": 0.9229494701264074,
+      "adv_accuracy": 0.97496915089693,
+      "accuracy_drop": -0.05201968077052266
+    },
+    {
+      "epsilon": 0.05,
+      "attack_type": "pgd",
+      "attack_success_rate": 0.03230497188337038,
+      "avg_error_increase": 0.09971921145915985,
+      "clean_mean_error": 873.2669067382812,
+      "adv_mean_error": 873.3668212890625,
+      "clean_accuracy": 0.9228711508238321,
+      "adv_accuracy": 0.9258794822571971,
+      "accuracy_drop": -0.0030083314333649858
+    },
+    {
+      "epsilon": 0.1,
+      "attack_type": "pgd",
+      "attack_success_rate": 0.03370166611263012,
+      "avg_error_increase": 0.07850585132837296,
+      "clean_mean_error": 873.2667236328125,
+      "adv_mean_error": 873.3455200195312,
+      "clean_accuracy": 0.92278238894758,
+      "adv_accuracy": 0.9265225707527878,
+      "accuracy_drop": -0.003740181805207743
+    }
+  ],
+  "Experiment 4: PPF-VAE": [
+    {
+      "epsilon": 0.01,
+      "attack_type": "fgsm",
+      "attack_success_rate": 0.0,
+      "avg_error_increase": 0.06695474684238434,
+      "clean_mean_error": 872.9085693359375,
+      "adv_mean_error": 872.9755249023438,
+      "clean_accuracy": 1.0,
+      "adv_accuracy": 1.0,
+      "accuracy_drop": 0.0
+    },
+    {
+      "epsilon": 0.05,
+      "attack_type": "fgsm",
+      "attack_success_rate": 0.0,
+      "avg_error_increase": 0.34364354610443115,
+      "clean_mean_error": 872.9063720703125,
+      "adv_mean_error": 873.2498168945312,
+      "clean_accuracy": 1.0,
+      "adv_accuracy": 1.0,
+      "accuracy_drop": 0.0
+    },
+    {
+      "epsilon": 0.1,
+      "attack_type": "fgsm",
+      "attack_success_rate": 0.0,
+      "avg_error_increase": 0.6889998912811279,
+      "clean_mean_error": 872.9066772460938,
+      "adv_mean_error": 873.5956420898438,
+      "clean_accuracy": 1.0,
+      "adv_accuracy": 1.0,
+      "accuracy_drop": 0.0
+    },
+    {
+      "epsilon": 0.2,
+      "attack_type": "fgsm",
+      "attack_success_rate": 0.0,
+      "avg_error_increase": 1.3954933881759644,
+      "clean_mean_error": 872.9074096679688,
+      "adv_mean_error": 874.3031005859375,
+      "clean_accuracy": 1.0,
+      "adv_accuracy": 1.0,
+      "accuracy_drop": 0.0
+    },
+    {
+      "epsilon": 0.05,
+      "attack_type": "pgd",
+      "attack_success_rate": 0.0,
+      "avg_error_increase": -0.019088899716734886,
+      "clean_mean_error": 872.9083251953125,
+      "adv_mean_error": 872.8890991210938,
+      "clean_accuracy": 1.0,
+      "adv_accuracy": 1.0,
+      "accuracy_drop": 0.0
+    },
+    {
+      "epsilon": 0.1,
+      "attack_type": "pgd",
+      "attack_success_rate": 0.0,
+      "avg_error_increase": -0.0687590092420578,
+      "clean_mean_error": 872.90966796875,
+      "adv_mean_error": 872.8408813476562,
+      "clean_accuracy": 1.0,
+      "adv_accuracy": 1.0,
+      "accuracy_drop": 0.0
+    }
+  ]
+}

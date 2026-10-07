@@ -1,0 +1,57 @@
+{
+  "accuracy": {
+    "1. Centralized VAE": 0.9586645776982442,
+    "2. Federated VAE (FL)": 0.9462930093010754,
+    "3. Centralized + DP (\u03b5=10)": 0.9462155205187874,
+    "4. PPF-VAE (FL+DP, \u03b5=14) [OPTIMIZED]": 0.9549717529173316
+  },
+  "precision": {
+    "1. Centralized VAE": 0.551354142758779,
+    "2. Federated VAE (FL)": 0.4177202637711339,
+    "3. Centralized + DP (\u03b5=10)": 0.4173449755808791,
+    "4. PPF-VAE (FL+DP, \u03b5=14) [OPTIMIZED]": 0.5073095382578474
+  },
+  "recall": {
+    "1. Centralized VAE": 0.50949098621421,
+    "2. Federated VAE (FL)": 0.44671261930010603,
+    "3. Centralized + DP (\u03b5=10)": 0.4485683987274655,
+    "4. PPF-VAE (FL+DP, \u03b5=14) [OPTIMIZED]": 0.487592788971368
+  },
+  "f1_score": {
+    "1. Centralized VAE": 0.5295965608465608,
+    "2. Federated VAE (FL)": 0.43173025186399855,
+    "3. Centralized + DP (\u03b5=10)": 0.4323937543124377,
+    "4. PPF-VAE (FL+DP, \u03b5=14) [OPTIMIZED]": 0.49725579257576985
+  },
+  "auc_roc": {
+    "1. Centralized VAE": 0.8806438223570371,
+    "2. Federated VAE (FL)": 0.7900412285435101,
+    "3. Centralized + DP (\u03b5=10)": 0.8258151322784959,
+    "4. PPF-VAE (FL+DP, \u03b5=14) [OPTIMIZED]": 0.8408054249852683
+  }
+}
+
+
+================================================================================
+Best F1-Score: 1. Centralized VAE = 0.5296
+================================================================================
+
+================================================================================
+PRIVACY-UTILITY TRADEOFF ANALYSIS
+================================================================================
+1. Centralized VAE: No DP (F1 = 0.5296)
+2. Federated VAE (FL): No DP (F1 = 0.4317)
+3. Centralized + DP (ε=10):
+  ε = 10.39
+  F1 = 0.4324
+  Utility loss vs baseline = 18.4%
+4. PPF-VAE (FL+DP, ε=14) [OPTIMIZED]:
+  ε = 5.96
+  F1 = 0.4973
+  Utility loss vs baseline = 6.1%
+
+
+
+
+
+  

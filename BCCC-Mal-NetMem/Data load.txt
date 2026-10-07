@@ -1,0 +1,35 @@
+CELL 2: MOUNT GOOGLE DRIVE (run after restart)
+
+Mounted at /content/drive
+✓ Google Drive mounted!
+CSV Path: /content/drive/MyDrive/Colab/CSVs
+✓ CSV folder found:
+  - All_Memory.csv
+  - All_Network.csv
+  - Benign-CSVs
+  - Malicious-CSVs
+
+
+MODIFIED CELL 3: UPDATE CONFIGURATION
+
+✓ Enhanced Config loaded! Device: cuda
+  Data sample size: 100000
+  FL clients: 3, rounds: 3
+  ✅ Non-IID enabled: True (alpha=0.5)
+  ✅ Communication tracking: True
+  ✅ Adversarial testing: True
+
+CELL 8: LOAD AND PREPARE DATA
+Loading data from Google Drive...
+
+============================================================
+DATASET SUMMARY
+============================================================
+Input dimension: 79
+Training samples: 1839146
+Validation samples: 394103
+Test benign: 394103
+Test malicious: 18860
+============================================================
+
+✓ Data preparation complete!

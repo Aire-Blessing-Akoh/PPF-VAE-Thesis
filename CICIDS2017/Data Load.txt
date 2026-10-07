@@ -1,0 +1,32 @@
+MODIFIED CELL 3: UPDATE CONFIGURATION
+✓ Enhanced Config loaded! Device: cpu
+  Data sample size: 50000
+  FL clients: 3, rounds: 3
+  ✅ Non-IID enabled: True (alpha=0.5)
+  ✅ Communication tracking: True
+  ✅ Adversarial testing: True
+
+
+MODIFIED CELL 8: DATA PREPARATION WITH NON-IID VISUALIZATION
+ Loading data from Google Drive...
+
+============================================================
+DATASET SUMMARY
+============================================================
+Input dimension: 77
+Training samples: 35000
+Validation samples: 4875
+Test benign: 4875
+Test malicious: 2625
+============================================================
+
+============================================================
+NON-IID DATA DISTRIBUTION ANALYSIS
+============================================================
+
+📊 Heterogeneity Metrics:
+  Average KL Divergence: 0.0000
+  Average JS Divergence: 0.0000
+  Higher values indicate more heterogeneous data distribution
+
+✓ Data preparation complete with Non-IID analysis!

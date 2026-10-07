@@ -1,0 +1,46 @@
+Core Class Definitions
+# ==============================================================================
+# MODIFIED CELL 3: UPDATE CONFIGURATION
+# Aligned to CICIOT23 pre-split dataset
+✓ Enhanced Config loaded! Device: cuda
+  Dataset: CICIOT23 (pre-split train/test/validation)
+  Sample size cap: None (Using ALL data)
+  FL clients: 3, rounds: 3
+  ✅ Non-IID enabled: True
+
+
+Loading CICIOT23 dataset...
+Processing Training Data...
+  Stacking 5491971 rows from train.csv...
+Fitting Scaler on Benign Training Data...
+Processing Validation Data...
+  Stacking 1176851 rows from validation.csv...
+Processing Test Data...
+  Stacking 1176851 rows from test.csv...
+Identified 34 unique labels.
+
+============================================================
+CICIOT23 DATASET MEMORY-OPTIMIZED LOAD COMPLETE
+============================================================
+Features: 46
+Train (Benign): 129538
+Val (Benign):   27519
+Test (Benign):  27709
+Test (Attack):  1149142
+=========================
+DATASET SUMMARY
+============================================================
+Input dimension: 46
+Training samples (benign): 129538
+Validation samples (benign): 27519
+Test benign: 27709
+Test malicious: 1149142
+============================================================
+DATASET SUMMARY
+============================================================
+Input dimension: 46
+Training samples (benign): 129538
+Validation samples (benign): 27519
+Test benign: 27709
+Test malicious: 1149142
+============================================================
