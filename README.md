@@ -1,43 +1,54 @@
-# PPF-VAE: Privacy-Preserving Federated Variational Autoencoder for Network Intrusion Detection
+# PPF-VAE: Privacy-Preserving Federated VAE for Network Intrusion Detection
 
-> **Master's Thesis** — Evaluating the trade-off between privacy, utility, and adversarial robustness in federated anomaly detection across six real-world network traffic datasets.
+> **Master's Thesis** — Evaluating the trade-off between privacy, utility, and adversarial robustness in federated anomaly-based intrusion detection.
 
 ---
 
 ## Overview
 
-This repository contains the experimental results, trained models, and evaluation artifacts for a thesis investigating **PPF-VAE** — a Privacy-Preserving Federated Variational Autoencoder designed for network intrusion detection.
+**PPF-VAE** is a Privacy-Preserving Federated Variational Autoencoder for network intrusion detection. It combines three complementary techniques into a single framework:
 
-The framework combines:
-- **Federated Learning (FL)** — distributed training across multiple clients without sharing raw data
-- **Differential Privacy (DP)** — formal privacy guarantees via Gaussian noise injection
-- **Variational Autoencoder (VAE)** — unsupervised anomaly detection trained on benign traffic only
+| Component | Role |
+|-----------|------|
+| **Variational Autoencoder (VAE)** | Unsupervised anomaly detection — trained on benign traffic only, flags anomalies via reconstruction error |
+| **Federated Learning (FL)** | Distributed training across multiple clients without sharing raw network data |
+| **Differential Privacy (DP)** | Formal privacy guarantees via per-sample gradient clipping and Gaussian noise injection |
 
-Four experimental configurations are systematically compared across six datasets:
+Four experimental configurations are compared to isolate the contribution of each component:
 
-| # | Experiment | Privacy | Distribution |
-|---|-----------|---------|-------------|
-| 1 | Centralized VAE | ❌ None | Centralized |
-| 2 | Federated VAE (FL) | ❌ None | Federated |
-| 3 | Centralized + DP (ε=10) | ✅ DP | Centralized |
-| 4 | **PPF-VAE (Optimized)** | ✅ DP | Federated |
+| # | Experiment | Federated | DP |
+|---|-----------|:---------:|:--:|
+| 1 | Centralized VAE (baseline) | ❌ | ❌ |
+| 2 | Federated VAE | ✅ | ❌ |
+| 3 | Centralized VAE + DP (ε=10) | ❌ | ✅ |
+| 4 | **PPF-VAE** (FL + DP, optimized) | ✅ | ✅ |
 
 ---
 
 ## Datasets
 
-Six benchmark network traffic datasets are evaluated, covering a wide range of IoT, 5G, and enterprise network environments:
+Experiments are conducted on two benchmark network traffic datasets:
 
-| Dataset | Domain | Size |
-|---------|--------|------|
-| [CICIOT23](https://www.unb.ca/cic/datasets/iotdataset-2023.html) | IoT Network Traffic | ~5.5M train rows, 46 features, 34 attack classes |
-| [5G-NIDD](https://www.kaggle.com/datasets/ramoliyafenil/5g-network-intrusion-detection-dataset) | 5G Network Intrusion | Combined + synthetic 100k samples |
-| [CICIDS2017](https://www.unb.ca/cic/datasets/ids-2017.html) | Enterprise Network IDS | Synthetic 50k realistic samples |
-| [CICIDS2018](https://www.unb.ca/cic/datasets/ids-2018.html) | Enterprise Network IDS | Synthetic 100k samples |
-| [CICIOMT2024](https://www.unb.ca/cic/datasets/iomt-dataset-2024.html) | IoMT Healthcare Network | Synthetic 100k samples |
-| [BCCC-Mal-NetMem](https://www.unb.ca/cic/datasets/) | Malware Network Memory | 3.4 GB multi-class CSV data |
+### CICIOT23
+Large-scale IoT network intrusion dataset with pre-split train/test/validation partitions.
 
-> **Note:** Raw CSV dataset files are not stored in this repository due to size constraints. See the links above or the `Data Load.txt` file in each dataset folder for loading instructions.
+| Split | Benign Samples | Attack Samples | Features | Attack Classes |
+|-------|:--------------:|:--------------:|:--------:|:--------------:|
+| Train | 129,538 | — | 46 | 34 |
+| Validation | 27,519 | — | 46 | 34 |
+| Test | 27,709 | 1,149,142 | 46 | 34 |
+
+🔗 Source: [CIC IoT Dataset 2023](https://www.unb.ca/cic/datasets/iotdataset-2023.html)
+
+### BCCC-Mal-NetMem
+Multi-class malware network memory dataset with highly imbalanced class distribution.
+
+- ~3.4 GB of network flow CSVs across multiple malware families
+- Benign-to-malicious ratio makes this a challenging real-world scenario
+
+🔗 Source: [BCCC Datasets — University of New Brunswick](https://www.unb.ca/cic/datasets/)
+
+> **Note:** Raw CSV files are not stored in this repository. See `Data Load.txt` in each dataset folder for preprocessing instructions.
 
 ---
 
@@ -45,114 +56,157 @@ Six benchmark network traffic datasets are evaluated, covering a wide range of I
 
 ```
 PPF-VAE-Thesis/
-├── 5G-NIDD/
+├── CICIOT23/
 │   ├── exp1_centralized_vae.pth          # Trained model weights
 │   ├── exp2_federated_vae.pth
 │   ├── exp3_centralized_dp.pth
 │   ├── exp4_ppfvae_optimized.pth
-│   ├── comparison.json                   # Accuracy/F1/AUC results
-│   ├── adversarial_results.json          # FGSM & PGD robustness
-│   ├── adversarial_comparison.txt
-│   ├── comprehensive_comparison.png      # Visualisation
-│   ├── non_iid_distribution.png
-│   └── non_iid_metrics.json
-├── BCCC-Mal-NetMem/                      # Same structure as above
-├── CICIDS2017/
-├── CICIDS2018/
-├── CICIOMT24/
-└── CICIOT23/
-    ├── exp1_metrics.json                 # Per-experiment detail
-    ├── exp2_metrics.json
-    ├── exp3_metrics.json
-    ├── exp4_metrics.json
-    ├── experiments_comparison.json
-    ├── zero_day_analysis.png             # Zero-day detection
-    ├── zero_day_metrics.csv
-    └── all_confusion_matrices.png
+│   ├── comparison.json                   # Accuracy / F1 / AUC-ROC results
+│   ├── experiments_comparison.json       # Per-experiment detailed metrics
+│   ├── exp{1-4}_metrics.json             # Individual experiment breakdowns
+│   ├── adversarial_results.json          # FGSM & PGD robustness (raw)
+│   ├── adversarial_comparison.txt        # Adversarial summary table
+│   ├── comprehensive_comparison.png      # Multi-metric bar chart
+│   ├── comparison.png                    # Accuracy/F1 comparison
+│   ├── adversarial_robustness.png        # Attack robustness plot
+│   ├── all_confusion_matrices.png        # Confusion matrices (all 4 exps)
+│   ├── non_iid_distribution.png          # Client data distribution
+│   ├── non_iid_metrics.json
+│   ├── zero_day_analysis.png             # Zero-day detection evaluation
+│   ├── zero_day_metrics.csv
+│   └── Load Data.txt                     # Dataset loading instructions
+│
+└── BCCC-Mal-NetMem/
+    ├── exp1_centralized_vae.pth
+    ├── exp2_federated_vae.pth
+    ├── exp3_centralized_dp.pth
+    ├── exp4_ppfvae_optimized.pth
+    ├── comparison.json
+    ├── adversarial_results.json
+    ├── adversarial_comparison.txt
+    ├── comprehensive_comparison.png
+    ├── comparison.png
+    ├── adversarial_robustness.png
+    ├── non_iid_distribution.png
+    ├── non_iid_metrics.json
+    └── Data load.txt
 ```
 
 ---
 
-## Key Results
+## Results
 
-### Detection Performance (AUC-ROC)
+### Detection Performance
 
-| Dataset | Centralized VAE | Federated VAE | Centralized+DP | **PPF-VAE** |
-|---------|:--------------:|:-------------:|:--------------:|:-----------:|
-| CICIOT23 | 0.949 | 0.948 | 0.968 | **0.978** |
-| 5G-NIDD | 0.9998 | 1.000 | 1.000 | **1.000** |
-| CICIDS2017 | 0.9998 | 0.9997 | 0.9994 | **0.9997** |
-| CICIDS2018 | — | — | — | — |
-| CICIOMT24 | — | — | — | — |
-| BCCC-Mal-NetMem | 0.881 | 0.790 | 0.826 | **0.841** |
+**CICIOT23**
 
-### Privacy-Utility Trade-off (BCCC-Mal-NetMem)
+| Metric | Centralized VAE | Federated VAE | Centralized+DP | **PPF-VAE** |
+|--------|:--------------:|:-------------:|:--------------:|:-----------:|
+| Accuracy | 62.07% | 64.40% | 92.30% | 59.95% |
+| Precision | 99.89% | 99.85% | 99.80% | **99.95%** |
+| Recall | 61.22% | 63.63% | 92.29% | 59.01% |
+| F1-Score | 75.91% | 77.73% | 95.90% | 74.21% |
+| **AUC-ROC** | 94.93% | 94.79% | 96.76% | **97.78%** |
+| Privacy ε | — | — | 10.83 | **5.33** |
+
+> PPF-VAE achieves the **highest AUC-ROC (97.78%)** and the **strongest privacy (ε=5.33)** — outperforming Centralized+DP on both dimensions simultaneously.
+
+**BCCC-Mal-NetMem**
+
+| Metric | Centralized VAE | Federated VAE | Centralized+DP | **PPF-VAE** |
+|--------|:--------------:|:-------------:|:--------------:|:-----------:|
+| Accuracy | 95.87% | 94.63% | 94.62% | 95.50% |
+| Precision | 55.14% | 41.77% | 41.73% | 50.73% |
+| Recall | 50.95% | 44.67% | 44.86% | 48.76% |
+| F1-Score | 52.96% | 43.17% | 43.24% | **49.73%** |
+| AUC-ROC | 88.06% | 79.00% | 82.58% | **84.08%** |
+| Privacy ε | — | — | 10.39 | **5.96** |
+
+### Privacy–Utility Trade-off (BCCC-Mal-NetMem)
 
 | Model | Privacy Budget (ε) | F1-Score | Utility Loss vs Baseline |
 |-------|:-----------------:|:--------:|:------------------------:|
-| Centralized VAE | No DP | 0.5296 | — |
-| Federated VAE | No DP | 0.4317 | 18.5% |
-| Centralized + DP | ε = 10.39 | 0.4324 | 18.4% |
-| **PPF-VAE** | **ε = 5.96** | **0.4973** | **6.1%** |
+| Centralized VAE | No DP | 52.96% | — |
+| Federated VAE | No DP | 43.17% | −18.5% |
+| Centralized + DP | ε = 10.39 | 43.24% | −18.4% |
+| **PPF-VAE** | **ε = 5.96** | **49.73%** | **−6.1%** |
 
-> PPF-VAE achieves stronger privacy (lower ε) with significantly less utility loss than Centralized+DP.
+> PPF-VAE provides **stronger privacy at roughly half the epsilon budget** of Centralized+DP, while recovering 12 percentage points of utility.
 
-### Adversarial Robustness (CICIOT23 — FGSM & PGD Attacks)
+### Adversarial Robustness (FGSM & PGD Attacks)
 
-| Model | FGSM ε=0.2 Acc Drop | PGD ε=0.1 Acc Drop |
-|-------|:-------------------:|:------------------:|
-| Centralized + DP | −5.20% | −0.37% |
-| **PPF-VAE** | **0.00%** | **0.00%** |
+**CICIOT23**
 
-PPF-VAE achieves **perfect adversarial robustness** on CICIOT23, with 0% accuracy drop under all tested FGSM and PGD attack strengths.
+| Model | FGSM ε=0.01 | FGSM ε=0.05 | FGSM ε=0.20 | PGD ε=0.10 |
+|-------|:-----------:|:-----------:|:-----------:|:----------:|
+| Centralized+DP | −0.39% drop | −1.51% drop | −5.20% drop | −0.37% drop |
+| **PPF-VAE** | **0.00%** | **0.00%** | **0.00%** | **0.00%** |
+
+**BCCC-Mal-NetMem**
+
+| Model | FGSM ε=0.01 | FGSM ε=0.20 | PGD ε=0.10 |
+|-------|:-----------:|:-----------:|:----------:|
+| Centralized VAE | −0.36% | −19.60% | −2.20% |
+| Federated VAE | −1.13% | −8.61% | −1.22% |
+| Centralized+DP | −0.77% | −15.71% | −5.49% |
+| **PPF-VAE** | **−0.08%** | **−3.11%** | **−1.29%** |
+
+> On CICIOT23, PPF-VAE achieves **perfect adversarial robustness** (0% accuracy drop across all tested FGSM and PGD attack strengths). On BCCC-Mal-NetMem, it is the most robust model of all four configurations.
 
 ---
 
 ## Methodology
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        PPF-VAE Framework                    │
-│                                                             │
-│  Client 1 ──┐                                               │
-│  Client 2 ──┼──► Federated Aggregation ──► Global VAE      │
-│  Client 3 ──┘         (FedAvg)               Model         │
-│       │                                        │            │
-│  Local DP Noise                        Anomaly Scoring      │
-│  (Gaussian Mech.)                   (Reconstruction Error)  │
-└─────────────────────────────────────────────────────────────┘
+                        PPF-VAE Training Pipeline
+  ┌────────────────────────────────────────────────────────────────┐
+  │                                                                │
+  │  ┌──────────┐    Local VAE     ┌─────────────────────────┐    │
+  │  │ Client 1 │ ──── train ────► │                         │    │
+  │  ├──────────┤                  │   Federated Aggregation  │    │
+  │  │ Client 2 │ ──── train ────► │       (FedAvg)          │───►│ Global VAE
+  │  ├──────────┤                  │                         │    │   Model
+  │  │ Client 3 │ ──── train ────► │                         │    │
+  │  └──────────┘                  └─────────────────────────┘    │
+  │       │                                                        │
+  │  Per-sample gradient clipping + Gaussian DP noise             │
+  │  (Rényi DP accounting → formal ε guarantee)                   │
+  │                                                                │
+  └────────────────────────────────────────────────────────────────┘
+
+  Inference:  Input → Encoder → Latent z → Decoder → Reconstruction Error
+              If error > threshold  →  ANOMALY (attack traffic detected)
 ```
 
-- **Model:** VAE with encoder/decoder MLP, latent dimension tuned per dataset
-- **Federated Setup:** 3 clients, 3 rounds, Non-IID data distribution
-- **Privacy:** Per-sample gradient clipping + Gaussian noise (Rényi DP accounting)
-- **Detection:** Threshold on reconstruction error (trained on benign traffic only)
-- **Adversarial Evaluation:** FGSM and PGD attacks at multiple ε strengths
+**Key configuration:**
+- FL clients: 3 | FL rounds: 3 | Non-IID distribution: enabled (α=0.5)
+- DP: per-sample gradient clipping + Gaussian mechanism (Rényi DP accounting)
+- Detection threshold: tuned on benign validation set (95th percentile reconstruction error)
+- Adversarial evaluation: FGSM and PGD at ε ∈ {0.01, 0.05, 0.10, 0.20}
 
 ---
 
 ## Requirements
 
 ```bash
-pip install torch torchvision numpy pandas scikit-learn matplotlib opacus
+pip install torch numpy pandas scikit-learn matplotlib opacus
 ```
 
 - Python 3.8+
-- PyTorch (CUDA recommended for large datasets)
-- [Opacus](https://opacus.ai/) for differential privacy
+- PyTorch with CUDA (recommended — CICIOT23 has ~7M rows)
+- [Opacus](https://opacus.ai/) for differentially private training
 
 ---
 
 ## Citation
 
-If you use this work, please cite:
-
 ```bibtex
 @mastersthesis{akoh2026ppfvae,
-  title     = {PPF-VAE: Privacy-Preserving Federated Variational Autoencoder for Network Intrusion Detection},
-  author    = {Akoh, Aire-Blessing},
-  year      = {2026},
-  school    = {[Your Institution]},
+  title  = {PPF-VAE: Privacy-Preserving Federated Variational Autoencoder
+            for Network Intrusion Detection},
+  author = {Akoh, Aire-Blessing},
+  year   = {2026},
+  school = {[Your Institution]},
 }
 ```
 
@@ -160,4 +214,4 @@ If you use this work, please cite:
 
 ## License
 
-This repository is for academic research purposes. Dataset usage is subject to the respective dataset providers' terms of use.
+This repository is for academic research. Dataset usage is subject to the terms of the respective dataset providers.
