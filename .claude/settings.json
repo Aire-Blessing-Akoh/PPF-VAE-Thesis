@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(echo \"=== D:/Downloads \\(parent dir\\) top-level ===\" *)",
+      "Read(//d/Downloads/**)",
+      "Read(//c/Users/airea/**)",
+      "Bash(powershell -c \"Get-PSDrive -PSProvider FileSystem | Select-Object Name,Root\")",
+      "Bash(echo \"=== searching D:/Downloads \\(excluding ppf\\) for dataset-related names ===\" *)",
+      "Read(//c/Users/airea/AppData/**)",
+      "Read(//d/Downloads/Downloads/msc review/CICIDS2017/**)",
+      "Read(//d/Downloads/Downloads/msc review/CICIDS2018/**)",
+      "Read(//d/Downloads/Downloads/msc review/CICIOMT24/**)",
+      "Read(//d/Downloads/Downloads/msc review/**)",
+      "Read(//c/Users/airea/.kaggle/**)",
+      "Bash(unzip -p \"archive \\(1\\).zip\" \"train_iomt.csv\")",
+      "Bash(unzip -p \"archive \\(2\\).zip\" \"Train.csv\")",
+      "Bash(unzip -p \"archive \\(4\\).zip\" \"cic.csv\")",
+      "Bash(pwd)",
+      "Bash(mkdir -p __TRACKED_VAR__/nb_extract)",
+      "Bash(cd __TRACKED_VAR__/nb_extract)",
+      "Bash(unzip -o \"D:/Downloads/archive \\(1\\).zip\" \".virtual_documents/__notebook_source__.ipynb\")",
+      "Bash(ls -la .virtual_documents/)",
+      "Bash(unzip -l \"archive \\(2\\).zip\")",
+      "Bash(unzip -l \"archive \\(3\\).zip\")",
+      "Bash(unzip -l \"archive \\(4\\).zip\")",
+      "WebFetch(domain:www.kaggle.com)",
+      "Bash(awk -F',' '{print NF}')",
+      "Bash(awk -F, 'NR==1{for\\(i=1;i<=NF;i++\\) if\\($i==\"Label\"\\) col=i; print \"Label col index:\", col} NR>1{print $col}' Combined.csv)"
+    ]
+  }
+}
