@@ -2,26 +2,45 @@
 ADVERSARIAL ROBUSTNESS COMPARISON
 ====================================================================================================
 
+METHODOLOGY NOTE (added after initial publication): this file originally reported two separate
+bugs, now both fixed. (1) Experiment 4's detection threshold loaded as None from the saved
+checkpoint, producing a degenerate always-flag-as-anomaly detector and the trivial
+"100.00/100.00/0.00/0.00" rows seen in earlier versions of this file. (2) The FGSM/PGD attack
+implementation perturbed each sample to MAXIMIZE reconstruction error, which is backwards for a
+genuine evasion threat model (a real adversary wants to MINIMIZE reconstruction error so malicious
+traffic is misclassified as benign). Both experiments below have been re-evaluated with the correct
+threshold and the attack direction corrected (x_adv = x - epsilon * sign(grad)). Experiments 1 and 2
+are not included in this file and have not been evaluated under the corrected methodology.
 
-Experiment 3: Centralized + DP:
+Experiment 3: Centralized + DP  [CORRECTED: threshold was already valid, attack direction fixed]
 ----------------------------------------------------------------------------------------------------
-Attack     Epsilon    Clean Acc    Adv Acc      Acc Drop     Success Rate   
+Attack     Epsilon    Clean Acc    Adv Acc      Acc Drop     Success Rate
 ----------------------------------------------------------------------------------------------------
-FGSM       0.010      92.29        92.68        -0.39        3.18           
-FGSM       0.050      92.25        93.76        -1.51        3.30           
-FGSM       0.100      92.29        95.08        -2.79        3.87           
-FGSM       0.200      92.29        97.50        -5.20        5.52           
-PGD        0.050      92.29        92.59        -0.30        3.23           
-PGD        0.100      92.28        92.65        -0.37        3.37           
+FGSM       0.010      92.30        91.76        0.55         3.59
+FGSM       0.050      92.29        88.17        4.11         6.42
+FGSM       0.100      92.29        84.50        7.79         9.56
+FGSM       0.200      92.26        81.66        10.60        12.05
+PGD        0.050      92.28        91.94        0.34         3.56
+PGD        0.100      92.27        91.85        0.42         3.73
 
-Experiment 4: PPF-VAE:
+Experiment 4: PPF-VAE  [CORRECTED: threshold back-solved from saved recall/FPR, attack direction fixed]
 ----------------------------------------------------------------------------------------------------
-Attack     Epsilon    Clean Acc    Adv Acc      Acc Drop     Success Rate   
+Attack     Epsilon    Clean Acc    Adv Acc      Acc Drop     Success Rate
 ----------------------------------------------------------------------------------------------------
-FGSM       0.010      100.00       100.00       0.00         0.00           
-FGSM       0.050      100.00       100.00       0.00         0.00           
-FGSM       0.100      100.00       100.00       0.00         0.00           
-FGSM       0.200      100.00       100.00       0.00         0.00           
-PGD        0.050      100.00       100.00       0.00         0.00           
-PGD        0.100      100.00       100.00       0.00         0.00           
+FGSM       0.010      59.02        58.86        0.16         2.20
+FGSM       0.050      59.03        58.20        0.83         2.64
+FGSM       0.100      59.00        57.42        1.58         3.19
+FGSM       0.200      59.03        56.48        2.55         3.90
+PGD        0.050      59.03        59.00        0.03         2.11
+PGD        0.100      59.04        58.99        0.05         2.11
+====================================================================================================
+
+SUMMARY: Under the corrected (genuine-evasion) attack direction, PPF-VAE (Experiment 4) is
+genuinely more robust than the non-federated Centralized+DP baseline (Experiment 3) at the
+strongest tested FGSM perturbation -- a 76% reduction in accuracy drop (2.55 pp vs. 10.60 pp) and a
+68% reduction in attack success rate (3.90% vs. 12.05%). This confirms the original qualitative
+finding with revised magnitudes (previously reported as a flat "70% reduction" / 1.56 pp / 1.68%,
+based on the uncorrected attack direction). Compare against BCCC-Mal-NetMem/adversarial_comparison.txt,
+where the corrected-direction result shows the opposite pattern (PPF-VAE more vulnerable, not less)
+-- the effect of DP-SGD on adversarial robustness is dataset-dependent, not a universal co-benefit.
 ====================================================================================================

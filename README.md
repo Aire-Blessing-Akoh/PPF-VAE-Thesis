@@ -23,20 +23,33 @@ Four experimental configurations are compared to isolate the contribution of eac
 | 3 | Centralized VAE + DP (ε=10) | ❌ | ✅ |
 | 4 | **PPF-VAE** (FL + DP, optimized) | ✅ | ✅ |
 
+This repository contains the trained model checkpoints and result artifacts for both datasets. It does not include training code — see the **Reproducibility** section below.
+
+---
+
+## Methodology Corrections (read before citing any numbers)
+
+Two issues were found in the saved adversarial-robustness artifacts after initial publication and have been corrected in this repository. If you are citing results from an earlier version of this repo or the associated thesis draft, please use the corrected numbers below instead.
+
+1. **Attack direction bug (both datasets).** The FGSM/PGD attack implementation perturbed each sample to *maximize* reconstruction error. This is backwards for a genuine evasion threat model — a real adversary wants to *minimize* reconstruction error so malicious traffic is misclassified as benign. Experiments re-evaluated with the corrected direction (`x_adv = x − ε·sign(∇loss)`): **Experiment 1 and Experiment 4 on BCCC-Mal-NetMem**, and **Experiment 3 and Experiment 4 on CICIoT2023**. Experiment 2 on both datasets, and Experiment 3 on BCCC-Mal-NetMem, have **not** been re-evaluated and still reflect the original, uncorrected attack direction — treat those numbers as unreliable. See the `_methodology_notice` field in each `adversarial_results.json` and the header of each `adversarial_comparison.txt`.
+2. **Missing detection threshold (CICIoT2023, Experiment 4 only).** The saved checkpoint's threshold loaded as `None`, producing a degenerate always-flag-as-anomaly detector and the trivial "100% accuracy / 0% drop" figures seen in earlier versions of this repo. The threshold was back-solved from the checkpoint's own saved recall/FPR and cross-validated before re-evaluation.
+
+The practical consequence: the adversarial-robustness effect of DP-SGD is **dataset-dependent, not a universal co-benefit**. On CICIoT2023, PPF-VAE is genuinely more robust than the non-federated Centralized+DP baseline. On BCCC-Mal-NetMem, PPF-VAE is genuinely *more vulnerable* than the non-private Centralized VAE baseline — roughly three times more, at the strongest tested FGSM setting. Diagnostic analysis traces this reversal to each model's detection threshold sitting at a different position relative to its own malicious-sample reconstruction-error distribution, not to any intrinsic property of DP-SGD training. See the full discussion in the thesis, §4.5.3 and §5.3.3.
+
 ---
 
 ## Datasets
 
 Experiments are conducted on two benchmark network traffic datasets:
 
-### CICIOT23
+### CICIoT2023
 Large-scale IoT network intrusion dataset with pre-split train/test/validation partitions.
 
 | Split | Benign Samples | Attack Samples | Features | Attack Classes |
 |-------|:--------------:|:--------------:|:--------:|:--------------:|
-| Train | 129,538 | — | 46 | 34 |
-| Validation | 27,519 | — | 46 | 34 |
-| Test | 27,709 | 1,149,142 | 46 | 34 |
+| Train | 129,538 | — | 46 | 33 |
+| Validation | 27,519 | — | 46 | 33 |
+| Test | 27,709 | 1,149,142 | 46 | 33 |
 
 🔗 Source: [CIC IoT Dataset 2023](https://www.unb.ca/cic/datasets/iotdataset-2023.html)
 
@@ -48,7 +61,7 @@ Multi-class malware network memory dataset with highly imbalanced class distribu
 
 🔗 Source: [BCCC Datasets — University of New Brunswick](https://www.unb.ca/cic/datasets/)
 
-> **Note:** Raw CSV files are not stored in this repository. See `Data Load.txt` in each dataset folder for preprocessing instructions.
+> **Note:** Raw CSV files are not stored in this repository. See `Data Load.txt` / `Data load.txt` in each dataset folder for the preprocessing steps.
 
 ---
 
@@ -64,11 +77,11 @@ PPF-VAE-Thesis/
 │   ├── comparison.json                   # Accuracy / F1 / AUC-ROC results
 │   ├── experiments_comparison.json       # Per-experiment detailed metrics
 │   ├── exp{1-4}_metrics.json             # Individual experiment breakdowns
-│   ├── adversarial_results.json          # FGSM & PGD robustness (raw)
-│   ├── adversarial_comparison.txt        # Adversarial summary table
+│   ├── adversarial_results.json          # FGSM & PGD robustness (raw; see methodology notice)
+│   ├── adversarial_comparison.txt        # Adversarial summary table (corrected)
 │   ├── comprehensive_comparison.png      # Multi-metric bar chart
 │   ├── comparison.png                    # Accuracy/F1 comparison
-│   ├── adversarial_robustness.png        # Attack robustness plot
+│   ├── adversarial_robustness.png        # Attack robustness plot (corrected)
 │   ├── all_confusion_matrices.png        # Confusion matrices (all 4 exps)
 │   ├── non_iid_distribution.png          # Client data distribution
 │   ├── non_iid_metrics.json
@@ -82,11 +95,11 @@ PPF-VAE-Thesis/
     ├── exp3_centralized_dp.pth
     ├── exp4_ppfvae_optimized.pth
     ├── comparison.json
-    ├── adversarial_results.json
-    ├── adversarial_comparison.txt
+    ├── adversarial_results.json          # (see methodology notice)
+    ├── adversarial_comparison.txt        # (corrected)
     ├── comprehensive_comparison.png
     ├── comparison.png
-    ├── adversarial_robustness.png
+    ├── adversarial_robustness.png        # (corrected)
     ├── non_iid_distribution.png
     ├── non_iid_metrics.json
     └── Data load.txt
@@ -98,7 +111,7 @@ PPF-VAE-Thesis/
 
 ### Detection Performance
 
-**CICIOT23**
+**CICIoT2023**
 
 | Metric | Centralized VAE | Federated VAE | Centralized+DP | **PPF-VAE** |
 |--------|:--------------:|:-------------:|:--------------:|:-----------:|
@@ -133,25 +146,27 @@ PPF-VAE-Thesis/
 
 > PPF-VAE provides **stronger privacy at roughly half the epsilon budget** of Centralized+DP, while recovering 12 percentage points of utility.
 
-### Adversarial Robustness (FGSM & PGD Attacks)
+### Adversarial Robustness (FGSM & PGD Attacks) — corrected, see note above
 
-**CICIOT23**
+**CICIoT2023** — Centralized+DP (Exp 3) vs. PPF-VAE (Exp 4), strongest tested FGSM perturbation (ε=0.20)
 
-| Model | FGSM ε=0.01 | FGSM ε=0.05 | FGSM ε=0.20 | PGD ε=0.10 |
-|-------|:-----------:|:-----------:|:-----------:|:----------:|
-| Centralized+DP | −0.39% drop | −1.51% drop | −5.20% drop | −0.37% drop |
-| **PPF-VAE** | **0.00%** | **0.00%** | **0.00%** | **0.00%** |
+| Model | Clean Acc | Adv Acc | Accuracy Drop | Attack Success Rate |
+|-------|:---------:|:-------:|:--------------:|:--------------------:|
+| Centralized + DP | 92.26% | 81.66% | 10.60 pp | 12.05% |
+| **PPF-VAE** | 59.03% | 56.48% | **2.55 pp** | **3.90%** |
 
-**BCCC-Mal-NetMem**
+> PPF-VAE is genuinely more robust here — a **76% reduction in accuracy drop** and a **68% reduction in attack success rate** relative to Centralized+DP. (Experiments 1 and 2 on this dataset have not been evaluated under the corrected attack direction.)
 
-| Model | FGSM ε=0.01 | FGSM ε=0.20 | PGD ε=0.10 |
-|-------|:-----------:|:-----------:|:----------:|
-| Centralized VAE | −0.36% | −19.60% | −2.20% |
-| Federated VAE | −1.13% | −8.61% | −1.22% |
-| Centralized+DP | −0.77% | −15.71% | −5.49% |
-| **PPF-VAE** | **−0.08%** | **−3.11%** | **−1.29%** |
+**BCCC-Mal-NetMem** — Centralized VAE (Exp 1) vs. PPF-VAE (Exp 4), strongest tested FGSM perturbation (ε=0.20)
 
-> On CICIOT23, PPF-VAE achieves **perfect adversarial robustness** (0% accuracy drop across all tested FGSM and PGD attack strengths). On BCCC-Mal-NetMem, it is the most robust model of all four configurations.
+| Model | Clean Acc | Adv Acc | Accuracy Drop | Attack Success Rate |
+|-------|:---------:|:-------:|:--------------:|:--------------------:|
+| Centralized VAE | 50.96% | 46.56% | 4.40 pp | 4.40% |
+| **PPF-VAE** | 48.88% | 35.50% | **13.38 pp** | **16.21%** |
+
+> PPF-VAE is roughly **three times more vulnerable** here, not less — the opposite of what the uncorrected attack direction originally suggested. Diagnostic analysis traces this to PPF-VAE's detection threshold sitting in a more densely populated region of the malicious-sample reconstruction-error distribution, leaving more correctly-detected malicious samples only marginally above the decision boundary. (Experiments 2 and 3 on this dataset have not been evaluated under the corrected attack direction.)
+
+**Takeaway:** the "DP-SGD hardens the decision boundary" effect is real on one dataset and reversed on the other. It depends on where each independently-calibrated detection threshold happens to fall relative to that dataset's malicious-error distribution — not on an intrinsic robustness property of differential privacy itself.
 
 ---
 
@@ -179,22 +194,30 @@ PPF-VAE-Thesis/
 ```
 
 **Key configuration:**
-- FL clients: 3 | FL rounds: 3 | Non-IID distribution: enabled (α=0.5)
+- FL clients: 3 | Non-IID distribution: enabled (α=0.5)
+- FL rounds: 3 (non-private Federated VAE baseline) / 7 (optimized PPF-VAE)
+- Feature scaling: z-score (StandardScaler), fit on the benign training partition, for both datasets
 - DP: per-sample gradient clipping + Gaussian mechanism (Rényi DP accounting)
-- Detection threshold: tuned on benign validation set (95th percentile reconstruction error)
+- Detection threshold: tuned on benign validation set (97th percentile reconstruction error)
 - Adversarial evaluation: FGSM and PGD at ε ∈ {0.01, 0.05, 0.10, 0.20}
 
 ---
 
-## Requirements
+## Reproducibility
+
+This repository is a **results archive**, not a runnable training pipeline — the notebook used to produce these checkpoints and results is not included here. To load and inspect a checkpoint:
 
 ```bash
-pip install torch numpy pandas scikit-learn matplotlib opacus
+pip install torch numpy
 ```
 
-- Python 3.8+
-- PyTorch with CUDA (recommended — CICIOT23 has ~7M rows)
-- [Opacus](https://opacus.ai/) for differentially private training
+```python
+import torch
+ck = torch.load("CICIOT23/exp4_ppfvae_optimized.pth", map_location="cpu", weights_only=False)
+print(ck["threshold"], ck["metrics"])
+```
+
+Each `.pth` file contains the model's `state_dict`, its calibrated anomaly-detection `threshold`, and a `metrics` dict with the reported accuracy/precision/recall/F1/AUC-ROC. See the thesis for the full model architecture and training configuration needed to reconstruct the `nn.Module` class before loading `state_dict` into it.
 
 ---
 

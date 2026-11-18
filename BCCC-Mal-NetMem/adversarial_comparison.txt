@@ -2,48 +2,68 @@
 ADVERSARIAL ROBUSTNESS COMPARISON
 ====================================================================================================
 
+METHODOLOGY NOTE (added after initial publication): the original FGSM/PGD attack implementation
+perturbed each sample to MAXIMIZE reconstruction error, which is backwards for a genuine evasion
+threat model (a real adversary wants to MINIMIZE reconstruction error so malicious traffic is
+misclassified as benign). Experiment 1 and Experiment 4 below have been re-evaluated with the
+attack direction corrected (x_adv = x - epsilon * sign(grad)). Experiment 2 and Experiment 3 below
+still reflect the ORIGINAL, UNCORRECTED attack direction and have NOT been re-verified -- treat
+their numbers as unreliable pending re-evaluation.
 
-Experiment 1: Centralized VAE:
+Experiment 1: Centralized VAE  [CORRECTED ATTACK DIRECTION]
 ----------------------------------------------------------------------------------------------------
-Attack     Epsilon    Clean Acc    Adv Acc      Acc Drop     Success Rate   
+Attack     Epsilon    Clean Acc    Adv Acc      Acc Drop     Success Rate
 ----------------------------------------------------------------------------------------------------
-FGSM       0.010      50.97        51.33        -0.36        0.40           
-FGSM       0.050      50.97        53.75        -2.79        2.79           
-FGSM       0.100      50.93        54.72        -3.79        3.79           
-FGSM       0.200      50.97        70.56        -19.60       19.60          
-PGD        0.050      50.94        51.78        -0.84        0.84           
-PGD        0.100      50.98        53.18        -2.20        2.21           
+FGSM       0.010      50.99        50.46        0.53         0.59
+FGSM       0.050      50.95        48.44        2.51         2.51
+FGSM       0.100      50.98        48.08        2.91         2.91
+FGSM       0.200      50.96        46.56        4.40         4.40
+PGD        0.050      50.95        50.31        0.64         0.67
+PGD        0.100      50.97        50.06        0.91         0.94
 
-Experiment 2: Federated VAE:
+Experiment 2: Federated VAE  [UNCORRECTED -- original backwards-direction attack, not re-verified]
 ----------------------------------------------------------------------------------------------------
-Attack     Epsilon    Clean Acc    Adv Acc      Acc Drop     Success Rate   
+Attack     Epsilon    Clean Acc    Adv Acc      Acc Drop     Success Rate
 ----------------------------------------------------------------------------------------------------
-FGSM       0.010      45.02        46.16        -1.13        9.02           
-FGSM       0.050      44.71        49.50        -4.79        8.12           
-FGSM       0.100      44.84        50.75        -5.92        8.31           
-FGSM       0.200      44.64        53.26        -8.61        9.36           
-PGD        0.050      44.66        45.38        -0.72        9.99           
-PGD        0.100      44.46        45.68        -1.22        9.84           
+FGSM       0.010      45.02        46.16        -1.13        9.02
+FGSM       0.050      44.71        49.50        -4.79        8.12
+FGSM       0.100      44.84        50.75        -5.92        8.31
+FGSM       0.200      44.64        53.26        -8.61        9.36
+PGD        0.050      44.66        45.38        -0.72        9.99
+PGD        0.100      44.46        45.68        -1.22        9.84
 
-Experiment 3: Centralized + DP:
+Experiment 3: Centralized + DP  [UNCORRECTED -- original backwards-direction attack, not re-verified]
 ----------------------------------------------------------------------------------------------------
-Attack     Epsilon    Clean Acc    Adv Acc      Acc Drop     Success Rate   
+Attack     Epsilon    Clean Acc    Adv Acc      Acc Drop     Success Rate
 ----------------------------------------------------------------------------------------------------
-FGSM       0.010      44.49        45.26        -0.77        10.68          
-FGSM       0.050      44.58        49.62        -5.05        10.48          
-FGSM       0.100      44.75        53.14        -8.39        11.14          
-FGSM       0.200      44.66        60.37        -15.71       16.56          
-PGD        0.050      44.50        48.80        -4.31        10.02          
-PGD        0.100      44.52        50.01        -5.49        9.88           
+FGSM       0.010      44.49        45.26        -0.77        10.68
+FGSM       0.050      44.58        49.62        -5.05        10.48
+FGSM       0.100      44.75        53.14        -8.39        11.14
+FGSM       0.200      44.66        60.37        -15.71       16.56
+PGD        0.050      44.50        48.80        -4.31        10.02
+PGD        0.100      44.52        50.01        -5.49        9.88
 
-Experiment 4: PPF-VAE:
+Experiment 4: PPF-VAE  [CORRECTED ATTACK DIRECTION]
 ----------------------------------------------------------------------------------------------------
-Attack     Epsilon    Clean Acc    Adv Acc      Acc Drop     Success Rate   
+Attack     Epsilon    Clean Acc    Adv Acc      Acc Drop     Success Rate
 ----------------------------------------------------------------------------------------------------
-FGSM       0.010      48.78        48.86        -0.08        2.92           
-FGSM       0.050      48.69        49.71        -1.03        3.04           
-FGSM       0.100      48.70        50.34        -1.65        3.74           
-FGSM       0.200      48.93        52.04        -3.11        4.52           
-PGD        0.050      48.71        49.45        -0.74        3.18           
-PGD        0.100      48.59        49.89        -1.29        3.52           
+FGSM       0.010      48.60        48.62        -0.02        3.23
+FGSM       0.050      48.75        44.04        4.71         7.11
+FGSM       0.100      48.82        37.09        11.73        14.19
+FGSM       0.200      48.88        35.50        13.38        16.21
+PGD        0.050      48.91        48.19        0.72         3.09
+PGD        0.100      48.83        47.71        1.12         3.53
+====================================================================================================
+
+SUMMARY: Under the corrected (genuine-evasion) attack direction, PPF-VAE (Experiment 4) is
+roughly THREE TIMES MORE VULNERABLE than the non-private Centralized VAE (Experiment 1) at the
+strongest tested FGSM perturbation (13.38 pp accuracy drop / 16.21% attack success rate, vs. 4.40 pp
+/ 4.40% for Experiment 1). This reverses the direction originally reported. Diagnostic analysis of
+the clean reconstruction-error distributions shows that PPF-VAE's anomaly-detection threshold on
+this dataset sits in a more densely populated region of the malicious-sample error distribution
+than the Centralized VAE's does, leaving a larger share of its correctly-detected malicious samples
+only marginally above the decision boundary and therefore easier to evade with a small
+gradient-based perturbation. Compare against CICIOT23/adversarial_comparison.txt, where the
+corrected-direction result shows the opposite pattern (PPF-VAE genuinely more robust) -- the effect
+of DP-SGD on adversarial robustness is dataset-dependent, not a universal co-benefit.
 ====================================================================================================
